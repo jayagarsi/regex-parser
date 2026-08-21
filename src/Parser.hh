@@ -1,0 +1,66 @@
+# ifndef PARSER_HH
+# define PARSER_HH
+
+# include <string>
+# include <memory>
+
+/**
+ * @brief NodeType enumeration
+ * 
+ * This represents the type that a node in the syntax tree can have.
+ * Each node can either be an operation or a set of atomic chars.
+ * We have the concatenation, alternation (|) star (*), plus (*),
+ * question (?) and empty value (\varepsilon)
+ *
+ */
+enum NodeType { CHAR, CONCAT, ALT, STAR, PLUS, QUESTION, EMPTY };
+
+
+struct Node {
+    NodeType type;
+    char ch = 0;                        // useful when t+ype == Char
+    std::unique_ptr<Node> left_operand;     // left operand or unique operand
+    std::unique_ptr<Node> right_operand;    // right operand if there is
+};
+
+using NodePtr = std::unique_ptr<Node>;
+
+
+/* UNAMBIGOUS LL(1) GRAMMAR for Regular Exprs
+    expr    := term ('|' term)*
+    term    := factor*
+    factor  := atom postfix?
+    postfix := '*' | '+' | '?'
+    atom    := CHAR | '(' expr ')' | '[' class ']' | '\' escaped
+*/
+
+/** @class Parser
+ * @brief 
+ * 
+ */
+class Parser {
+
+public:
+
+    Parser(const std::string& input);
+
+    NodePtr parse();
+
+private:
+    const std::string& s;
+    std::string expr;
+    size_t pos;
+
+    char peek() const;
+    char consume();
+    bool accept(char s);
+    bool expect(char s);
+    bool isValid(char s);
+
+    NodePtr parseExpr();
+    NodePtr parseTerm();
+    NodePtr parseFactor();
+    NodePtr parseAtom();
+};
+
+# endif
