@@ -17,24 +17,6 @@ char Parser::consume() {
     return s[pos++];
 }
 
-bool Parser::accept(char s) {
-    if (peek() == s) {
-        consume();
-        return true;
-    }
-    return false;
-}
-
-bool Parser::expect(char s) {
-    if (s == ')') {
-        consume();
-        return true;
-    }
-    else {
-        throw std::runtime_error("expected ')' at " + std::to_string(pos));
-        return false;
-    }
-}
 
 bool Parser::isTerm(char s) {
     return (s != ')' and s != '|' and s != '\0');
@@ -43,7 +25,8 @@ bool Parser::isTerm(char s) {
 NodePtr Parser::parseExpr() {                  // expr :   term ( | term)*
     expr += '(';        
     auto node = parseTerm();                  // process first term
-    while (accept('|')) {
+    while (peek() == '|') {
+        consume();
         expr += '|';
         auto next = std::make_unique<Node>();   /*            (ALT)            */
         next->type = NodeType::ALT;             /*             / \             */
@@ -107,21 +90,21 @@ NodePtr Parser::parseFactor() {
 }
 
 NodePtr Parser::parseAtom() {
-    char p = peek();
-    if (p == '(') {
+    if (peek() == '(') {
         consume();
         expr += '(';
         auto node = parseExpr();
+        if (peek() != ')')
+            throw std::runtime_error("expected ')' at " + std::to_string(pos));
         expr += ')';
-        expect(')');
+        consume();
         return node;
     }
-    if (p == '\\') {
-        consume();
+    else {
+        auto node = std::make_unique<Node>();
+        node->type = NodeType::CHAR;
+        node->ch = consume();
+        expr += node->ch;
+        return node;
     }
-    auto node = std::make_unique<Node>();
-    node->type = NodeType::CHAR;
-    node->ch = consume();
-    expr += node->ch;
-    return node;
 }

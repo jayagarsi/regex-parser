@@ -31,7 +31,7 @@ using NodePtr = std::unique_ptr<Node>;
     term    := factor*
     factor  := atom postfix?
     postfix := '*' | '+' | '?'
-    atom    := CHAR | '(' expr ')' | '[' class ']' | '\' escaped
+    atom    := CHAR | '(' expr ')'
 */
 
 /** @class Parser
@@ -63,10 +63,30 @@ private:
     std::string expr;
     size_t pos;
 
+    /**
+     * @brief Peeks at the next character
+     * If the input string is fully parsed returns '\0'
+     * otherwise the corresponding char
+     * 
+     * @return char 
+     */
     char peek() const;
+
+    /**
+     * @brief Peeks and consumes the next char
+     * Peeks and moves the pointer to the string
+     * 
+     * @return char 
+     */
     char consume();
-    bool accept(char s);
-    bool expect(char s);
+
+    /**
+     * @brief Checks if the parsed string is a Term
+     * 
+     * @param s 
+     * @return true 
+     * @return false 
+     */
     bool isTerm(char s);
 
     NodePtr parseExpr();
