@@ -35,8 +35,20 @@ using NodePtr = std::unique_ptr<Node>;
 */
 
 /** @class Parser
- * @brief 
+ * @brief Recursive Descent Parser for a LL(1) grammar for the language
+ * of simple Regular Expressions. The grammar for this can be seen in the ANTLR file
+ * Here is the unambigous LL(1) version:
+ *
+ *    expr -> term ('|' term)*
+ *    term -> factor*
+ *    factor -> atom postfix?
+ *    atom -> CHAR | '(' expr ')'
+ *
+ *    CHAR -> ['a'-'z'] | ['A' - 'Z'] | ['0'-'9']
+ *    postfix -> '*' | '+' | '?'
  * 
+ * Since the grammar is so simple, the easiest solution is to use the mentioned
+ * Recursive Descent Parser, which implements a method for every non-terminal expression.
  */
 class Parser {
 
@@ -55,7 +67,7 @@ private:
     char consume();
     bool accept(char s);
     bool expect(char s);
-    bool isValid(char s);
+    bool isTerm(char s);
 
     NodePtr parseExpr();
     NodePtr parseTerm();
