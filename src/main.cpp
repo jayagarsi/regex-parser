@@ -1,4 +1,5 @@
 # include "Parser.hh"
+# include "AutomataManager.hh"
 # include <iostream>
 # include <string>
 
@@ -39,7 +40,9 @@ void printBT(const std::string& prefix, NodePtr& node, bool isLeft)
         std::cout << (isLeft ? "├──" : "└──" );
 
         // print the value of the node
-        std::cout << enumToString(node->type) << std::endl;
+        std::cout << enumToString(node->type);
+        if (node->type == NodeType::CHAR) std::cout << " " << node->ch;
+        std::cout << std::endl;
 
         // enter the next tree level - left and right branch
         printBT( prefix + (isLeft ? "│   " : "    "), node->left_operand, true);
@@ -57,4 +60,7 @@ int main () {
     Parser p(s);
     NodePtr tree = p.parse();
     printBT(tree);
+    AutomataManager am;
+    auto nfa = am.regexToNFA(tree);
+    
 }
