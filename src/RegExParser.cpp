@@ -1,12 +1,14 @@
 # include "RegExParser.hh"
 # include "Parser.hh"
 
-RegExParser::RegExParser(const std::string& input) {
-    Parser p(input);
+# include "AutomataManager.hh"
+
+RegExParser::RegExParser() {}
+
+bool RegExParser::isAccepted(const std::string& regex, const std::string& s) {
+    p = Parser(input);
     auto tree = p.parse();
     parseTree = std::move(tree);
-}
-
-bool RegExParser::isAccepted() {
-    
+    am.astToNFA(parseTree);
+    return am.isMatch(regex, s);
 }
