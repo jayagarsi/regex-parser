@@ -12,6 +12,7 @@ struct State {
     StateType type;
     State* first_out = nullptr;       // pointer to other state
     State* second_out = nullptr;      // pointer if there is a second transition
+    int id;
 };
 
 struct Fragment {
@@ -42,7 +43,7 @@ class AutomataManager {
 private:
 
     NFA nfa;
-
+    int nextID = 0;
     State* makeState(StateType type, char c, State* out, State* out1);
     Fragment astToNFA(NodePtr& ast);
 

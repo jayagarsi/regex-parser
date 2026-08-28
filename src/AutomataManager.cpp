@@ -4,7 +4,7 @@
 AutomataManager::AutomataManager() {}
 
 State* AutomataManager::makeState(StateType type, char c, State* out, State* out1) {
-    auto s = std::make_unique<State>(State{c, type, out, out1});
+    auto s = std::make_unique<State>(State{c, type, out, out1, nextID++});
     State* raw = s.get();
     nfa.states.push_back(std::move(s));
     return raw;
@@ -77,5 +77,5 @@ NFA AutomataManager::regexToNFA(NodePtr& ast) {
 }
 
 bool AutomataManager::isMatch(NFA& N, std::string& s) {
-    
+    std::vector<bool> alreadyOn(N.states.size(), false);
 }
