@@ -2,6 +2,7 @@
 # define AUTOMATAMANAGER_HH
 
 # include "Parser.hh"
+# include <unordered_set>
 # include <unordered_map>
 # include <vector>
 
@@ -26,6 +27,18 @@ struct NFA {
     std::vector<std::unique_ptr<State>> states;      // list of states
 };
 
+struct DState {
+    bool accepting = false;
+    std::vector<std::unordered_map<char, int>> transitions;
+};
+
+struct DFA {
+    int start;
+    std::vector<DState> states;
+};
+
+using SetState = std::unordered_set<State*>;
+
 /**
  * @brief Thompson's NFA
  * 
@@ -42,17 +55,23 @@ class AutomataManager {
 
 private:
 
-    NFA nfa;
     int nextID = 0;
-    State* makeState(StateType type, char c, State* out, State* out1);
-    Fragment astToNFA(NodePtr& ast);
+    State* makeState(NFA& N, StateType type, char c, State* out, State* out1);
+    Fragment astToNFA(NFA& nfa, NodePtr& ast);
+
+    SetState epsilonClosure(SetState& T);
+    bool simulateNFA(NFA& N, std::string& s);
+    bool simulateDFA(DFA& D, std::string& s);
+
 
 public:
 
     AutomataManager();
 
     NFA regexToNFA(NodePtr& ast);
+    DFA nfaToDFA(NFA& n);
     bool isMatch(NFA& N, std::string& s);
+    bool isMatch(DFA& D, std::string& s);
 
 };
 
