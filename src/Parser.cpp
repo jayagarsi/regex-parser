@@ -1,12 +1,19 @@
 # include "Parser.hh"
 # include <iostream>
 
-Parser::Parser(const std::string& input) : s(input), pos(0) {}
+Parser::Parser() {}
+
+Parser::Parser(std::string& input) : s(input), pos(0) {}
 
 NodePtr Parser::parse() {
     auto node = parseExpr();
     if (pos != s.size()) throw std::runtime_error("Unexpected symbol");
     return node;
+}
+
+void Parser::set(const std::string& input) {
+    pos = 0;
+    s = input;
 }
 
 char Parser::peek() const {

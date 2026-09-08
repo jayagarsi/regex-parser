@@ -55,14 +55,16 @@ class Parser {
 public:
 
     Parser();
-    Parser(const std::string& input);
+    Parser(std::string& input);
 
     NodePtr parse();
 
+    void set(const std::string& input);
+
 private:
-    const std::string& s;
+    std::string s = "";
     std::string expr;
-    size_t pos;
+    size_t pos = 0;
 
     /**
      * @brief Peeks at the next character
