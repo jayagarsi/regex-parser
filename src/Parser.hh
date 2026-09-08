@@ -54,6 +54,7 @@ class Parser {
 
 public:
 
+    Parser();
     Parser(const std::string& input);
 
     NodePtr parse();
