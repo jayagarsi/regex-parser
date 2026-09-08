@@ -1,9 +1,5 @@
-# include "Parser.hh"
-# include "AutomataManager.hh"
 # include "RegExParser.hh"
 # include <iostream>
-# include <string>
-# include <vector>
 
 int main () {
     RegExParser rp;
