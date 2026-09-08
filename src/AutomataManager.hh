@@ -24,6 +24,7 @@ struct Fragment {
 struct NFA {
     State* start;
     State* accept;
+    int numStates = 0;
     std::vector<std::unique_ptr<State>> states;      // list of states
 };
 
