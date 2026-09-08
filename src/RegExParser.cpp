@@ -108,7 +108,7 @@ bool RegExParser::isAccepted(std::string& s) {
     return am.isMatch(nfa, s);
 }
 
-void RegExParser::printBT(NodePtr& node) {
+void RegExParser::printAST(NodePtr& node) {
     printTree("", node, false);
     std::cout << std::endl; 
 }
