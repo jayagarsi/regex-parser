@@ -15,7 +15,17 @@
  */
 enum NodeType { CHAR, CONCAT, ALT, STAR, PLUS, QUESTION, EMPTY };
 
-
+/**
+ * @brief Node struct
+ * 
+ * Represents a node in the Abstract Syntax Tree. It has four attribtues:
+ *   - type: type of node in the AST. If it is a leave node, it can be
+ *           a char value or an empty value. Otherwise it represents the
+ *           operation applied to the two subtrees.
+ *   - ch: if type == CHAR it is the value of the char
+ *   - left_operand: left sub-tree
+ *   - right_operand: right sub-tree
+ */
 struct Node {
     NodeType type;
     char ch = 0;                        // useful when t+ype == Char
@@ -24,7 +34,6 @@ struct Node {
 };
 
 using NodePtr = std::unique_ptr<Node>;
-
 
 /* UNAMBIGOUS LL(1) GRAMMAR for Regular Exprs
     expr    := term ('|' term)*
@@ -54,16 +63,41 @@ class Parser {
 
 public:
 
+    /**
+     * @brief Construct a new Parser object
+     * 
+     */
     Parser();
+
+    /**
+     * @brief Construct a new Parser object
+     * 
+     * @param input the regular expression string
+     */
     Parser(std::string& input);
 
-    NodePtr parse();
-
+    /**
+     * @brief Setter for the input attribute
+     * 
+     * @param input new regular expression string
+     */
     void set(const std::string& input);
 
+    /**
+     * @brief Parses the input and outputs the AST
+     * 
+     * @return NodePtr root of the AST
+     */
+    NodePtr parse();
+
 private:
+    /** @brief Regular expression string */
     std::string s = "";
+
+    /** @brief Parsed expression with operator precedence */
     std::string expr;
+
+    /** @brief Position in the string */
     size_t pos = 0;
 
     /**
@@ -92,9 +126,32 @@ private:
      */
     bool isTerm(char s);
 
+    /**
+     * @brief Parse *Expr* rule of the grammar
+     * 
+     * @return NodePtr subtree with root *expr*
+     */
     NodePtr parseExpr();
+
+    /**
+     * @brief Parse *Term* rule of the grammar
+     * 
+     * @return NodePtr subtree with root *term*
+     */
     NodePtr parseTerm();
+
+    /**
+     * @brief Parse *Factor* rule of the grammar
+     * 
+     * @return NodePtr subtree with root *factor*
+     */
     NodePtr parseFactor();
+
+    /**
+     * @brief Parse *Atom* rule of the grammar
+     * 
+     * @return NodePtr subtree with root *atom*
+     */
     NodePtr parseAtom();
 };
 
