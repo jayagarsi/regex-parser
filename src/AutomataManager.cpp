@@ -8,6 +8,7 @@ State* AutomataManager::makeState(NFA& nfa, StateType type, char c, State* out, 
     auto s = std::make_unique<State>(State{c, type, out, out1, nextID++});
     State* raw = s.get();
     nfa.states.push_back(std::move(s));
+    ++nfa.numStates;
     return raw;
 }
 
@@ -71,7 +72,7 @@ Fragment AutomataManager::astToNFA(NFA& N, NodePtr& ast) {
 SetState AutomataManager::epsilonClosure(SetState& T) {
     std::stack<State*> stack;
     SetState closure = T;                       // initialize stack with input
-    for (auto t : T) closure.insert(t);         // initialize ε-closure with incoming states
+    for (auto t : T) stack.push(t);         // initialize ε-closure with incoming states
     while (not stack.empty()) {
         auto t = stack.top();
         stack.pop();
@@ -80,12 +81,6 @@ SetState AutomataManager::epsilonClosure(SetState& T) {
                 stack.push(t->first_out);
             if (t->second_out and closure.insert(t->second_out).second)
                 stack.push(t->second_out);
-        }
-        
-        else if (t->type == StateType::UNIQUE) {
-            if (t->first_out and t->first_out->c == '\0' and closure.insert(t->first_out).second) {
-                stack.push(t->first_out);
-            }
         }
     }
     return closure;
@@ -100,6 +95,7 @@ bool AutomataManager::simulateNFA(NFA& N, std::string& s) {
         for (auto state : current) {
             if (state->type == StateType::UNIQUE and state->c == c) {
                 moveSet.insert(state->first_out);
+                
             }
         }
         if (moveSet.empty()) return false;
@@ -119,7 +115,7 @@ NFA AutomataManager::regexToNFA(NodePtr& ast) {
     for (auto ptr : f.dangling) *ptr = finalState;
     nfa.start = f.start;
     nfa.accept = finalState;
-    return nfa;
+    return std::move(nfa);
 }
 
 DFA AutomataManager::nfaToDFA(NFA& nfa) {
