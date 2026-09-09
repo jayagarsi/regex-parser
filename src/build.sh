@@ -17,7 +17,7 @@ set -e
 
 em++ AutomataManager.cpp Parser.cpp wasm_bindings.cpp \
     -o ../webass/regex_engine.js \
-    -s EXPORTED_FUNCTIONS='["_matchRegex","_getASTDiagram","_getNFADiagram"]' \
+    -s EXPORTED_FUNCTIONS='["_matchRegex", "_getLastError", "_getASTDiagram","_getNFADiagram"]' \
     -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MODULARIZE=1 \

@@ -35,29 +35,44 @@ void astToMermaid(Node* node, std::ostringstream& out) {
     }
 }
 
-extern "C" {
-EMSCRIPTEN_KEEPALIVE
-const char* getASTDiagram(const char* pattern) {
-    static std::string result;
-    try {
-        std::string p(pattern);
-        Parser parser(p);
-        NodePtr ast = parser.parse();
-        g_nodeCounter = 0;
-        std::ostringstream out;
-        out << "graph LR\n";
-        astToMermaid(ast.get(), out);
-        result = out.str();
-    } catch (...) {
-        result = "graph LR\nErr((\"invalid\"))";
-    }
-    return result.c_str();
-}
-}
-
 std::string stateLabel(int id) { return "S" + std::to_string(id); }
 
+
+// Simple static buffer used to hand error messages back to JS.
+static std::string g_lastError;
+
 extern "C" {
+
+// Returns: 1 = match, 0 = no match, -1 = parse/runtime error.
+// On -1, call getLastError() from JS to retrieve the error message.
+EMSCRIPTEN_KEEPALIVE
+int matchRegex(const char* pattern, const char* input) {
+    try {
+        std::string patternStr(pattern);
+        Parser parser(patternStr);
+        NodePtr ast = parser.parse();
+
+        AutomataManager mgr;
+        NFA nfa = mgr.regexToNFA(ast);
+
+        std::string inputStr(input);
+        bool result = mgr.isMatch(nfa, inputStr);
+
+        g_lastError.clear();
+        return result ? 1 : 0;
+    } catch (const std::exception& e) {
+        g_lastError = e.what();
+        return -1;
+    }
+}
+
+// Returns a pointer to a null-terminated string with the last error message.
+// Valid until the next call to matchRegex.
+EMSCRIPTEN_KEEPALIVE
+const char* getLastError() {
+    return g_lastError.c_str();
+}
+
 EMSCRIPTEN_KEEPALIVE
 const char* getNFADiagram(const char* pattern) {
     static std::string result;
@@ -85,34 +100,22 @@ const char* getNFADiagram(const char* pattern) {
     }
     return result.c_str();
 }
-}
 
-// Simple static buffer used to hand error messages back to JS.
-static std::string g_lastError;
-
-extern "C" {
-
-// Returns: 1 = match, 0 = no match, -1 = parse/runtime error.
-// On -1, call getLastError() from JS to retrieve the error message.
-EMSCRIPTEN_KEEPALIVE
-int matchRegex(const char* pattern, const char* input) {
+const char* getASTDiagram(const char* pattern) {
+    static std::string result;
     try {
-        std::string patternStr(pattern);
-        Parser parser(patternStr);
+        std::string p(pattern);
+        Parser parser(p);
         NodePtr ast = parser.parse();
-
-        AutomataManager mgr;
-        NFA nfa = mgr.regexToNFA(ast);
-
-        std::string inputStr(input);
-        bool result = mgr.isMatch(nfa, inputStr);
-
-        g_lastError.clear();
-        return result ? 1 : 0;
-    } catch (const std::exception& e) {
-        g_lastError = e.what();
-        return -1;
+        g_nodeCounter = 0;
+        std::ostringstream out;
+        out << "graph LR\n";
+        astToMermaid(ast.get(), out);
+        result = out.str();
+    } catch (...) {
+        result = "graph LR\nErr((\"invalid\"))";
+    }
+    return result.c_str();
 }
 
-}
 }
