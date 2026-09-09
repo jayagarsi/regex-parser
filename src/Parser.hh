@@ -127,6 +127,15 @@ private:
     bool isTerm(char s);
 
     /**
+     * @brief Checks if the parsed char is in the alphabet
+     * 
+     * @param s char
+     * @return true if char is valid, i.e., s \in {'A'-'Z'} U {'a'-'z'} U {'0'-'9'}
+     * @return false otherwise
+     */
+    bool isValid(char s);    
+
+    /**
      * @brief Parse *Expr* rule of the grammar
      * 
      * @return NodePtr subtree with root *expr*

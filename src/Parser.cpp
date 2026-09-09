@@ -24,9 +24,16 @@ char Parser::consume() {
     return s[pos++];
 }
 
-
 bool Parser::isTerm(char s) {
     return (s != ')' and s != '|' and s != '\0');
+}
+
+bool Parser::isValid(char s) {
+    return (
+        (s >= '0' and s <= '9') or
+        (s >= 'A' and s <= 'Z') or
+        (s >= 'a' and s <= 'a')
+    );
 }
 
 NodePtr Parser::parseExpr() {                  // expr :   term ( | term)*
@@ -108,10 +115,13 @@ NodePtr Parser::parseAtom() {
         return node;
     }
     else {
+        char c = consume();
+        if (not isValid(c))
+            throw std::runtime_error("Non valid char" + std::to_string(c));
         auto node = std::make_unique<Node>();
         node->type = NodeType::CHAR;
-        node->ch = consume();
-        expr += node->ch;
+        node->ch = c;
+        expr += c;
         return node;
     }
 }
