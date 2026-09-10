@@ -86,7 +86,7 @@ using SetState = std::unordered_set<State*>;
  * this process has the following properties:
  *   - N has only one initial state
  *   - N has only one accepting state
- *   - The number of states of A is linear in the size of E
+ *   - The number of states of N is linear in the size of E
  *   - The number of transitions leaving any state is at most two
  * 
  */
