@@ -25,5 +25,5 @@ em++ AutomataManager.cpp Parser.cpp wasm_bindings.cpp \
     -O2
 
 echo "Build complete. Output written to docs/regex_engine.js and docs/regex_engine.wasm"
-echo "Test locally with:  cd webass && python3 -m http.server 8000"
+echo "Test locally with:  cd wass && python3 -m http.server 8000"
 echo "Then open http://localhost:8000"
